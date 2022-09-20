@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from django.core.management.commands.runserver import Command as Runserver
 
 
 def main():
@@ -16,7 +17,10 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+    os.system("python3 manage.py runserver")
 
 
 if __name__ == '__main__':
+    Runserver.default_addr = '127.0.0.1'
+    Runserver.default_port = '3000'
     main()

@@ -75,8 +75,8 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DB_ENDPOINT='http://localhost:8000'
-DB_TABLE='my-table'
+DB_ENDPOINT='https://dynamodb.us-east-1.amazonaws.com'
+DB_TABLE='LineService'
 
 #DATABASES = {
 #    'default': {

@@ -1,9 +1,51 @@
 from django import forms
-from .models import DIET_CHOICES
+from .models import USER_LIST
+
+
 
 
 class MyForm(forms.Form):
-	name = forms.CharField(
+	
+	user = forms.MultipleChoiceField(
+		required=True,
+		widget=forms.CheckboxSelectMultiple,choices=USER_LIST)
+ 
+	context = forms.CharField(
+		required=True,
+		widget=forms.Textarea(
+			attrs={'placeholder': 'Context'}
+		),
+	)
+
+
+
+'''
+class MyForm(forms.Form):
+    user = forms.MultipleChoiceField(
+        required=True,
+        widget=forms.MultipleChoiceField(
+            choices=USER_LIST,
+            attrs={'placeholder' : 'UserID'}
+        ) 
+    )
+    group = forms.CharField(
+        required=True,
+        widget=forms.Select(
+            choices=GROUP_LIST,
+            attrs={'placeholder' : 'Group'}
+        ) 
+    )
+    context = forms.CharField(
+		required=True,
+		widget=forms.TextInput(
+			attrs={'placeholder': 'Context', 'maxlength': '500'}
+		),
+	)
+'''
+
+'''
+class MyForm(forms.Form):
+    	name = forms.CharField(
 		required=True,
 		widget=forms.TextInput(
 			attrs={'placeholder': 'Name', 'maxlength': '100'}
@@ -17,3 +59,4 @@ class MyForm(forms.Form):
 		required=True,
 		widget=forms.TextInput(attrs={'placeholder': 'Email', 'maxlength': '100'}),
 	)
+'''
