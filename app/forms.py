@@ -10,7 +10,21 @@ class MyForm(forms.Form):
 		required=True,
 		widget=forms.CheckboxSelectMultiple,choices=USER_LIST)
  
-	context = forms.CharField(
+	context1 = forms.CharField(
+		required=True,
+		widget=forms.Textarea(
+			attrs={'placeholder': 'Context'}
+		),
+	)
+
+	context2 = forms.CharField(
+		required=True,
+		widget=forms.Textarea(
+			attrs={'placeholder': 'Context'}
+		),
+	)
+
+	context3 = forms.CharField(
 		required=True,
 		widget=forms.Textarea(
 			attrs={'placeholder': 'Context'}
