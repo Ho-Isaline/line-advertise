@@ -1,8 +1,10 @@
+from turtle import width
 from django import forms
 from .models import USER_LIST
 
-
-
+	
+def on_button_pressed(self):
+    self.botton.set_text("hi")
 
 class MyForm(forms.Form):
 	
@@ -17,6 +19,26 @@ class MyForm(forms.Form):
 		),
 	)
 
+ 
+ 
+
+'''
+
+class MyApp(App):
+    
+	def __init__(self, *args):
+		super(MyApp, self).__init__(*args)
+	def main(self):
+		container = gui.VBox(width=300, height=300)
+		self.bt = gui.Button("+")
+		#setting the listener for the onclick event of the button
+		self.bt.onclick.do(self.on_button_pressed)
+		container.append(self.bt)
+		return container
+
+	def on_button_pressed(self, widgit):
+		self.bt.set_text('Hi!')
+'''
 
 
 '''

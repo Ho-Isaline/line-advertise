@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import MyForm
+from .forms import MyForm#, MyApp
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from flask import Flask
@@ -9,6 +9,7 @@ from django.conf import settings
 import boto3
 from .models import Id_Name_dict
 import json
+from remi import start, App
 
 app = Flask(__name__)
 
@@ -23,22 +24,27 @@ def home(request):
 
 
 def entry(request):
+    
 	form = MyForm(request.POST or None)
 	if request.method == 'POST':
 		form = MyForm(request.POST)
 		if form.is_valid():
 			response = request.POST
-			context = response['context']
 			username = form.cleaned_data.get('user')
-			print(context, username)
-			try:
-				message = json.loads(context)
-				line_bot_api.multicast(username,FlexSendMessage(alt_text='advertise', contents = message))
-			except ValueError:
-				line_bot_api.multicast(username,TextSendMessage(text = context))
-			
+			key_list = list(response.keys())
+			contexts = []
+			for contest_name in key_list[2::]:
+				msg = response[contest_name]
+				if isinstance(msg, str):
+					contexts.append(TextSendMessage(text = msg))
+				else:
+					message = json.loads(msg)
+					contexts.append(FlexSendMessage(alt_text='advertise', contents = message))
+			line_bot_api.multicast(username,contexts)
+	
 	form = MyForm()
 	return render(request, 'entry.html', {'form': MyForm()})
+
 	
 	
 

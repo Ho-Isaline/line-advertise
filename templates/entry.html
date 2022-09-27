@@ -5,8 +5,30 @@
 
 {% endif %}
 
-<form action="/entry/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
+<div>
+    <form action="/entry/" method="post">
+        <div>
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div id = "row"></div>
+            <button onclick="createTextarea()">Create Textarea</button>
+            <hr>
+            <div class="footer">
+                <input type="submit" value="Submit">
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    let noTextarea = 1;
+    function createTextarea(){
+        let container = document.getElementById("row")
+        let newTextarea = document.createElement("textarea")
+        newTextarea.name = `msgContent${noTextarea+=1}`
+        newTextarea.cols = "40";
+        newTextarea.rows = "10";
+        container.insertAdjacentElement('beforeend',newTextarea)
+    }
+</script>
