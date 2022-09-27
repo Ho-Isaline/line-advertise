@@ -13,7 +13,7 @@ import json
 app = Flask(__name__)
 
 line_bot_api = LineBotApi("1ob3ZSFOu0arzAXk8xh7EnR0x+hOOlJ5p7L603loiIoYP6p0sK1HM+AePqF+pHXEqjTM2PDnXlwN4R3typt1MZHE12JC6n5WLibbMHOA+z7YVp1qQ8sDI2zcn8LcVfEr6APdOhrthUDb13MYGTIyUVGUYhWQfeY8sLGRXgo3xvw=")
-handler = WebhookHandler("04c9dfd04fc0dafebbc4cb32c6e6fd5f")
+handler = WebhookHandler("3b4bc5fb33633b211c2e19d4f37b9ef5")
 
 
 
@@ -37,19 +37,19 @@ def entry(request):
 			username = form.cleaned_data.get('user')
 			print('username: ', username)
 			contexts = []
-			try:
-				for context in contexts_elements:
-					message = json.loads(context)
-					print('message: ', message)
-					contexts.append(FlexSendMessage(alt_text='advertise', contents = message))
-				line_bot_api.multicast(username,contexts)
-			except ValueError :
-				print('in except')
-				for context in contexts_elements:
-					print('context in contexts',context)
+			
+			for context in contexts_elements:
+				if isinstance(context,str):
 					contexts.append(TextSendMessage(text = context))
-				print('contexts: ', contexts)
-				line_bot_api.multicast(username,contexts)
+				elif isinstance(context,None):
+					pass
+				else:
+					print('in except')
+					message = json.loads(context)
+					contexts.append(FlexSendMessage(alt_text='advertise', contents = message))
+
+			print('contexts: ', contexts)
+			line_bot_api.multicast(username,contexts)
 			
 	form = MyForm()
 	return render(request, 'entry.html', {'form': MyForm()})
