@@ -1,15 +1,11 @@
 from django.shortcuts import render
-from .forms import MyForm#, MyApp
+from .forms import MyForm
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from flask import Flask
 from linebot import LineBotApi, WebhookHandler
 from linebot.models import *
-from django.conf import settings
-import boto3
-from .models import Id_Name_dict
 import json
-from remi import start, App
 
 app = Flask(__name__)
 
@@ -41,7 +37,6 @@ def entry(request):
 					message = json.loads(msg)
 					contexts.append(FlexSendMessage(alt_text='advertise', contents = message))
 			line_bot_api.multicast(username,contexts)
-	
 	form = MyForm()
 	return render(request, 'entry.html', {'form': MyForm()})
 
