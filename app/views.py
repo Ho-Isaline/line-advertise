@@ -39,10 +39,3 @@ def entry(request):
 			line_bot_api.multicast(username,contexts)
 	form = MyForm()
 	return render(request, 'entry.html', {'form': MyForm()})
-
-	
-	
-
-
-
-

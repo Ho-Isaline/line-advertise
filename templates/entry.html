@@ -25,10 +25,14 @@
     let noTextarea = 1;
     function createTextarea(){
         let container = document.getElementById("row")
+        container.insertAdjacentHTML('beforeend',"<p>")
+        container.insertAdjacentHTML('beforeend',`<label>Context${noTextarea+=1}: </label>`)
         let newTextarea = document.createElement("textarea")
-        newTextarea.name = `msgContent${noTextarea+=1}`
+        newTextarea.name = `msgContent${noTextarea}`
+        newTextarea.placeholder = "Context";
         newTextarea.cols = "40";
         newTextarea.rows = "10";
         container.insertAdjacentElement('beforeend',newTextarea)
+        container.insertAdjacentHTML('beforeend',"</p>")
     }
 </script>
