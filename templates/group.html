@@ -1,0 +1,18 @@
+
+{% if error %}
+
+<div style="color:red;">{{ error }}</div>
+
+{% endif %}
+
+<div>
+    <form action="/group/" method="post">
+        <div>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="footer">
+                <input type="submit" value="Submit">
+            </div>
+        </div>
+    </form>
+</div>
