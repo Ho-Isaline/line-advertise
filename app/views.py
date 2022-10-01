@@ -56,15 +56,33 @@ def group(request):
 			    'dynamodb', region_name='us-east-1', endpoint_url=DYNAMO_ENDPOINT)
 			view_table = dynamodb.Table('LineService')
 			print(users)
-			for userId in users:
-				view_table.update_item(
-					Key={'userId': userId, 'funcId': 'personal'},
-					UpdateExpression = "SET #group = :G",
-					ExpressionAttributeNames = {'#group' : 'group'},
-					ExpressionAttributeValues = {':G' : [groupName] },
-					ReturnValues = 'UPDATED_NEW'
-				)
 			
+			
+			
+			for userId in users:
+				resp = view_table.get_item(Key={'userId': userId, 'funcId': 'personal'})['Item']
+				print(resp.keys())
+				if 'group'  in resp.keys():
+					print('have group attribute')
+					view_table.update_item(
+						Key={'userId': userId, 'funcId': 'personal'},
+						UpdateExpression = "SET #group = list_append(#group, :S)",
+						ExpressionAttributeNames = {'#group' : 'group'},
+						ExpressionAttributeValues = {':S' : groupName },
+						ReturnValues = 'UPDATED_NEW'
+					)
+					
+					
+				else:
+					print('no group attribute')
+					view_table.update_item(
+						Key={'userId': userId, 'funcId': 'personal'},
+						UpdateExpression = "SET #group = :l",
+						ExpressionAttributeNames = {'#group' : 'group'},
+						ExpressionAttributeValues = {':l' : [groupName] },
+						ReturnValues = 'UPDATED_NEW'
+					)
+				
 					
 	form = CreateGroupForm()
 	return render(request, 'group.html', {'form': CreateGroupForm()})
