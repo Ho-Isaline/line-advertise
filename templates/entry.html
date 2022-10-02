@@ -5,8 +5,37 @@
 
 {% endif %}
 
-<form action="/entry/" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit">
-</form>
+<div>
+    <form action="/entry/" method="post">
+        <div>
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div id = "row"></div>
+            <button onclick="createTextarea()">Create Textarea</button>
+            <p><hr></p>
+            <div class="footer">
+                <input type="submit" value="Submit">
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    let noTextarea = 1;
+    function createTextarea(){
+        let container = document.getElementById("row");
+        if (noTextarea<5){
+            container.insertAdjacentHTML('beforeend',`<label>Context${noTextarea+=1}: </label>`);
+            let newTextarea = document.createElement("textarea");
+            newTextarea.name = `msgContent${noTextarea}`;
+            newTextarea.placeholder = "Context";
+            newTextarea.cols = "40";
+            newTextarea.rows = "10";
+            container.insertAdjacentElement('beforeend',newTextarea);
+            container.insertAdjacentHTML('beforeend',"<p></p>");
+        }else{
+            container.insertAdjacentHTML('beforeend',"<div class='alert alert-warning' role='alert'>訊息數量已達到上限!!!");
+            }
+    }
+</script>
