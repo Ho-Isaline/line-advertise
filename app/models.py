@@ -40,7 +40,7 @@ for item in items:
     userName = item['profile']['displayName']
     CHOICES.append((userId, userName))
 
-
+USER_LIST = CHOICES
 
 '''
 while 'LastEvaluatedKey' in GROUP_CHOICES_DB:
@@ -54,4 +54,3 @@ for dict in data:
     if func == 'personal':
         GROUP_CHOICES.append((dict.get('userId'), dict.get('userId')))
 '''
-USER_LIST = CHOICES

@@ -19,7 +19,18 @@ class MyForm(forms.Form):
 		),
 	)
 
- 
+class CreateGroupForm(forms.Form):
+
+	user = forms.MultipleChoiceField(
+		required=True,
+		widget=forms.CheckboxSelectMultiple,choices=USER_LIST)
+
+	groupName = forms.CharField(
+		required=True,
+		widget=forms.TextInput(
+			attrs={'placeholder': 'Group Name'}
+		),
+	)
  
 
 '''
