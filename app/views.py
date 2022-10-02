@@ -63,14 +63,16 @@ def group(request):
 				resp = view_table.get_item(Key={'userId': userId, 'funcId': 'personal'})['Item']
 				print(resp.keys())
 				if 'group'  in resp.keys():
-					print('have group attribute')
-					view_table.update_item(
-						Key={'userId': userId, 'funcId': 'personal'},
-						UpdateExpression = "SET #group = list_append(#group, :S)",
-						ExpressionAttributeNames = {'#group' : 'group'},
-						ExpressionAttributeValues = {':S' : groupName },
-						ReturnValues = 'UPDATED_NEW'
-					)
+					if groupName in resp['group']:
+						pass
+					else:
+						view_table.update_item(
+							Key={'userId': userId, 'funcId': 'personal'},
+							UpdateExpression = "SET #group = list_append(#group, :l)",
+							ExpressionAttributeNames = {'#group' : 'group'},
+							ExpressionAttributeValues = {':l' : [groupName] },
+							ReturnValues = 'UPDATED_NEW'
+						)
 					
 					
 				else:
