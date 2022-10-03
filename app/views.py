@@ -1,4 +1,3 @@
-from ast import Expression
 from django.shortcuts import render
 from .forms import CreateGroupForm, MyForm
 from linebot import LineBotApi
@@ -9,7 +8,8 @@ from linebot.models import *
 import json
 import boto3
 from django.conf import settings
-from boto3.dynamodb.conditions import Attr
+from .models import table
+
 
 app = Flask(__name__)
 
@@ -49,43 +49,15 @@ def group(request):
 	if request.method == 'POST':
 		form = CreateGroupForm(request.POST)
 		if form.is_valid():
-			response = request.POST
 			users = form.cleaned_data.get('user')
 			groupName = form.cleaned_data.get('groupName')
-			DYNAMO_ENDPOINT = getattr(settings, 'DB_ENDPOINT', None)
-			dynamodb = boto3.resource(
-			    'dynamodb', region_name='us-east-1', endpoint_url=DYNAMO_ENDPOINT)
-			view_table = dynamodb.Table('LineService')
-			print(users)
-			
-			
-			
 			for userId in users:
-				resp = view_table.get_item(Key={'userId': userId, 'funcId': 'personal'})['Item']
+				resp = table.item_place('userId', userId, 'funcId')
 				print(resp.keys()) #confirm that if they have the group attribute
 				if 'group'  in resp.keys():
-					if groupName in resp['group']:
-						pass
-					else:
-						view_table.update_item(
-							Key={'userId': userId, 'funcId': 'personal'},
-							UpdateExpression = "SET #group = list_append(#group, :l)",
-							ExpressionAttributeNames = {'#group' : 'group'},
-							ExpressionAttributeValues = {':l' : [groupName] },
-							ReturnValues = 'UPDATED_NEW'
-						)
-					
-					
+					table.add_item('userId', userId, 'funcId', 'personal', 'group', groupName)	
 				else:
 					print('no group attribute')
-					view_table.update_item(
-						Key={'userId': userId, 'funcId': 'personal'},
-						UpdateExpression = "SET #group = :l",
-						ExpressionAttributeNames = {'#group' : 'group'},
-						ExpressionAttributeValues = {':l' : [groupName] },
-						ReturnValues = 'UPDATED_NEW'
-					)
-				
-					
+					table.set_item('userId', userId, 'funcId', 'personal', 'group', groupName)			
 	form = CreateGroupForm()
 	return render(request, 'group.html', {'form': CreateGroupForm()})
