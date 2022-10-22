@@ -1,40 +1,126 @@
-from datetime import date
-from sqlite3 import Time
-from turtle import write_docstringdict
-from django.shortcuts import render
-from django.conf import settings
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
-from django.views.decorators.csrf import csrf_exempt
-
-from linebot import LineBotApi, WebhookParser
-from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from django.http import HttpResponse
+from .template_message import get_hi_message, get_off_message
+from .tools import LineSDK
+from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
-import datetime
-import sys
-sys.path.append("C:/Users/user/OneDrive/桌面/python/line-advertise/linebot0817/views.py")
-from .write_in_database import write_in_database
+from .write_in_database import update_dynamodb
 
-line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
-handler = WebhookParser(settings.LINE_CHANNEL_SECRET)
 
-@app.route("/callback", methods=['POST'])
-def callback():
+line = LineSDK()
+handler = line.handler
+
+
+def callback(request):
+    if request.method == 'POST':
     # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+        signature = request.META['HTTP_X_LINE_SIGNATURE']
+        # get request body as text
+        body = request.body.decode('utf-8')
+        # handle webhook body
+        try:
+            handler.handle(body, signature)
+        except InvalidSignatureError:
+            print("Invalid signature. Please check your channel access token/channel secret.")
+            return HttpResponse(400)
+        return HttpResponse('OK')
+  
 
-    # get request body as text
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    if event.message.text == "hi":
+        line.send_msg(event.reply_token, get_hi_message())
+        
+    elif event.message.text == "off":
+        line.send_msg(event.reply_token, get_off_message())
+    
+    else:
+        db = update_dynamodb(event, "msg")
+        db.judge_new_customer()
+        db.updata_data()
 
-    # handle webhook body
-    try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
-        print("Invalid signature. Please check your channel access token/channel secret.")
-        abort(400)
+# 1 -> get postback_data  2 -> get dynamodb info(custormor exist or not)
+# 3 -> update record_auth
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    db = update_dynamodb(event, "post")
+    db.judge_new_customer()
+    db.record_auth()
+    
+    
+    
 
-    return 'OK'
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#from linebot.exceptions import InvalidSignatureError, LineBotApiError
+# import datetime
+#import sys
+#sys.path.append("C:/Users/user/OneDrive/桌面/python/line-advertise/linebot0817/views.py")
+# from linebot import LineBotApi, WebhookParser
+# from django.views.decorators.csrf import csrf_exempt
+# from django.http import HttpResponseBadRequest, HttpResponseForbidden
+# from datetime import date
+# from sqlite3 import Time
+# from turtle import write_docstringdict
+# from django.shortcuts import render
+# from django.conf import settings
+
+
+
+# def button(event):
+#     if isinstance(event, MessageEvent):
+#         if event.message.text == "hi":
+#             line_bot_api.reply_message(event.reply_token,
+#             TemplateSendMessage(alt_text='ButtonsTemplate',
+#             template=ButtonsTemplate(   title='Menu',
+#                                         text='按下按鈕直接聯繫客服',
+#                                         actions=[
+#                                             PostbackTemplateAction(
+#                                             label='聯繫',
+#                                             data='@customer_service')])))
+
+# def button_off(event):
+#     if isinstance(event, MessageEvent):
+#         if event.message.text == "off":
+#             line_bot_api.reply_message(event.reply_token,
+#             TemplateSendMessage(
+#             alt_text='ButtonsTemplate',
+#             template=ButtonsTemplate(   title='Menu',
+#                                         text='結束客服',
+#                                         actions=[
+#                                             PostbackTemplateAction(
+#                                             label='關掉',
+#                                             data='@customer_service_off')])))
 
 # @csrf_exempt
 # def callback(request):
@@ -58,28 +144,3 @@ def callback():
 #         return HttpResponse()
 #     else:
 #         return HttpResponseBadRequest()
-
-    
-def button(event):
-    if isinstance(event, MessageEvent):
-        if event.message.text == "hi":
-            line_bot_api.reply_message(event.reply_token,
-            TemplateSendMessage(alt_text='ButtonsTemplate',
-            template=ButtonsTemplate(   title='Menu',
-                                        text='按下按鈕直接聯繫客服',
-                                        actions=[
-                                            PostbackTemplateAction(
-                                            label='聯繫',
-                                            data='@customer_service')])))
-def button_off(event):
-    if isinstance(event, MessageEvent):
-        if event.message.text == "off":
-            line_bot_api.reply_message(event.reply_token,
-            TemplateSendMessage(
-            alt_text='ButtonsTemplate',
-            template=ButtonsTemplate(   title='Menu',
-                                        text='結束客服',
-                                        actions=[
-                                            PostbackTemplateAction(
-                                            label='關掉',
-                                            data='@customer_service_off')])))

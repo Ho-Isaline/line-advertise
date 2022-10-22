@@ -17,9 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include, re_path
 from linebot0817 import views
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path('^callback', views.callback),
-    
+     re_path('^callback', csrf_exempt(views.callback)),
 ]
