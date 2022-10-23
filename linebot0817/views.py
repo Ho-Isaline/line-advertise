@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from .template_message import get_hi_message, get_off_message
 from .tools import LineSDK
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
@@ -27,13 +26,9 @@ def callback(request):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    if event.message.text == "hi":
-        line.send_msg(event.reply_token, get_hi_message())
-        
-    elif event.message.text == "off":
-        line.send_msg(event.reply_token, get_off_message())
-    
-    else:
+    try:
+        line.send_msg(event)
+    except AttributeError:
         db = update_dynamodb(event, "msg")
         db.judge_new_customer()
         db.updata_data()
