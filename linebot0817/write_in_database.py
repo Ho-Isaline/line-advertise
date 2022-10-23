@@ -66,20 +66,24 @@ class update_dynamodb():
     #write msg into table
     def updata_data(self):
         response = self.table.get_item(Key={'userid': self.user_id})
-        if response["Item"]["record"] == True:
-            msgtext_history = response["Item"]["msgtext"]
-            msgtext_history.append(self.msg)
-            response = self.table.put_item(
-                Item={  "userid"     :  self.user_id,
-                        'funcId'     :  'personal',
-                        'group'      :  None,
-                        'groupBuying':  None,
-                        'profile'    :  None,
-                        'publishGB'  :  None,
-                        'templateGB' :  None,
-                        'record'     :  True,
-                        'msgtext'  :  msgtext_history}
-                )        
+        try:
+            if response["Item"]["record"] == True:
+                msgtext_history = response["Item"]["msgtext"]
+                msgtext_history.append(self.msg)
+                response = self.table.put_item(
+                    Item={  "userid"     :  self.user_id,
+                            'funcId'     :  'personal',
+                            'group'      :  None,
+                            'groupBuying':  None,
+                            'profile'    :  None,
+                            'publishGB'  :  None,
+                            'templateGB' :  None,
+                            'record'     :  True,
+                            'msgtext'  :  msgtext_history}
+                    )        
+        except KeyError:
+            print("未加好友無紀錄")
+            pass
 
 
 

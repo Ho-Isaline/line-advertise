@@ -23,14 +23,13 @@ def callback(request):
             return HttpResponse(400)
         return HttpResponse('OK')
   
-
+# 1 -> get messagetext(hi or off) 2 -> send button
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     try:
         line.send_msg(event)
     except AttributeError:
         db = update_dynamodb(event, "msg")
-        db.judge_new_customer()
         db.updata_data()
 
 # 1 -> get postback_data  2 -> get dynamodb info(custormor exist or not)
